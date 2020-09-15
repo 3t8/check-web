@@ -33,7 +33,7 @@ if (buildConfig.transifex) {
 
 gulp.task('relay:copy', (callback) => {
   if (buildConfig.relay.startsWith('http')) {
-    const res = request('GET', buildConfig.relay);
+    const res = request('GET', '../check-api/public/relay.json');
     if (res.statusCode < 300) {
       fs.writeFile('./relay.json', res.getBody(), callback);
     }
