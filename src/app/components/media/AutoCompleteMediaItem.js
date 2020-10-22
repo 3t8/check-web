@@ -80,7 +80,11 @@ function AutoCompleteMediaItem(props, context) {
         return;
       }
 
-      const encodedQuery = JSON.stringify(JSON.stringify({ keyword: searchText, eslimit: 30 }));
+      const encodedQuery = JSON.stringify(JSON.stringify({
+        keyword: searchText,
+        show: props.typesToShow || ['claims', 'links', 'images', 'videos', 'audios'],
+        eslimit: 30,
+      }));
       const params = {
         body: JSON.stringify({
           query: `
@@ -174,6 +178,7 @@ function AutoCompleteMediaItem(props, context) {
 
   return (
     <Autocomplete
+      blurOnSelect
       id="autocomplete-media-item"
       name="autocomplete-media-item"
       options={(searchResult && searchResult.items) ? searchResult.items : []}
@@ -181,7 +186,7 @@ function AutoCompleteMediaItem(props, context) {
       getOptionLabel={option => option.text}
       loading={searchResult ? searchResult.loading : false}
       loadingText={
-        <FormattedMessage id="autoCompleteMediaItem.searching" defaultMessage="Searching..." />
+        <FormattedMessage id="autoCompleteMediaItem.searching" defaultMessage="Searching…" />
       }
       noOptionsText={searchResult && searchResult.error ? (
         <FormattedMessage
@@ -213,11 +218,13 @@ AutoCompleteMediaItem.contextTypes = {
 AutoCompleteMediaItem.defaultProps = {
   dbid: null,
   onlyPublished: false,
+  typesToShow: ['claims', 'links', 'images', 'videos', 'audios'],
 };
 AutoCompleteMediaItem.propTypes = {
   onSelect: PropTypes.func.isRequired, // func({ value, text } or null) => undefined
   dbid: PropTypes.number, // filter results: do _not_ select this number
   onlyPublished: PropTypes.bool, // filter results
+  typesToShow: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default AutoCompleteMediaItem;

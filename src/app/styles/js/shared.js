@@ -52,6 +52,8 @@ export const googleOrange = '#db4437';
 export const slackGreen = '#2ab27b';
 // https://www.youtube.com/about/brand-resources/#logos-icons-colors
 export const youTubeRed = '#ff0000';
+// https://whatsappbrand.com/#color
+export const whatsappGreen = '#25D366';
 
 // Units
 export function units(unit) {
@@ -274,6 +276,14 @@ export const MuiTheme = {
         // We do need a color, though -- if we choose "transparent" the tbody
         // will show through.
         backgroundColor: white,
+      },
+    },
+    MuiTableSortLabel: {
+      active: {
+        color: `${highlightOrange} !important`,
+      },
+      icon: {
+        color: `${highlightOrange} !important`,
       },
     },
   },

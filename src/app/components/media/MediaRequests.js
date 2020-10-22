@@ -60,14 +60,11 @@ class MediaRequestsComponent extends Component {
     return (
       <div id="media__requests" style={this.props.style}>
         <Annotations
-          style={{
-            background: 'transparent',
-            border: 0,
-            boxShadow: 'none',
-          }}
           annotations={media.requests.edges}
           annotated={media}
           annotatedType="ProjectMedia"
+          annotationsCount={media.demand}
+          relay={this.props.relay}
           noActivityMessage={
             <FormattedMessage
               id="MediaRequests.noRequest"
@@ -85,7 +82,7 @@ MediaRequestsComponent.propTypes = {
   clientSessionId: PropTypes.string.isRequired,
 };
 
-const pageSize = 30;
+const pageSize = 10;
 const eventTypes = ['create_dynamicannotationfield'];
 const fieldNames = ['smooch_data'];
 const annotationTypes = [];
@@ -111,6 +108,7 @@ const MediaRequestsContainer = Relay.createContainer(withPusher(MediaRequestsCom
         dbid
         archived
         pusher_channel
+        demand
         requests: log(last: $pageSize, event_types: $eventTypes, field_names: $fieldNames, annotation_types: $annotationTypes, who_dunnit: $whoDunnit, include_related: true) {
           edges {
             node {
@@ -124,6 +122,9 @@ const MediaRequestsContainer = Relay.createContainer(withPusher(MediaRequestsCom
               object_after,
               object_changes_json,
               smooch_user_slack_channel_url,
+              smooch_user_external_identifier,
+              smooch_report_received_at,
+              smooch_report_update_received_at,
               meta,
               user {
                 id,

@@ -3,13 +3,16 @@ import PropTypes from 'prop-types';
 import Relay from 'react-relay/classic';
 import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
+import Box from '@material-ui/core/Box';
+import MediaLanguageChip from './MediaLanguageChip';
+import MediasLoading from './MediasLoading';
+import MediaTags from './MediaTags';
 import Task from '../task/Task';
 import Tasks from '../task/Tasks';
-import { withPusher, pusherShape } from '../../pusher';
 import CreateTask from '../task/CreateTask';
-import MediaRoute from '../../relay/MediaRoute';
-import MediasLoading from './MediasLoading';
 import UserUtil from '../user/UserUtil';
+import { withPusher, pusherShape } from '../../pusher';
+import MediaRoute from '../../relay/MediaRoute';
 import CheckContext from '../../CheckContext';
 import { getCurrentProjectId } from '../../helpers';
 import {
@@ -145,7 +148,7 @@ class MediaTasksComponent extends Component {
   }
 
   render() {
-    const { fieldset } = this.props;
+    const { fieldset, onTimelineCommentOpen } = this.props;
     const media = Object.assign(this.props.cachedMedia, this.props.media);
     const currentUserRole = UserUtil.myRole(
       this.getContext().currentUser,
@@ -157,6 +160,14 @@ class MediaTasksComponent extends Component {
 
     return (
       <div>
+        { fieldset === 'metadata' ?
+          <Box mt={3}>
+            <MediaLanguageChip projectMedia={media} />
+            <MediaTags
+              projectMedia={media}
+              onTimelineCommentOpen={onTimelineCommentOpen}
+            />
+          </Box> : null }
         <StyledTaskHeaderRow style={isBrowserExtension ? { padding: 0 } : {}}>
           { itemTasks.edges.length && fieldset === 'tasks' && !isBrowserExtension ?
             <FlexRow>
@@ -213,6 +224,7 @@ const MediaTasksContainer = Relay.createContainer(withPusher(MediaTasksComponent
             node {
               id
               dbid
+              show_in_browser_extension
               responses(first: 10000) {
                 edges {
                   node {
@@ -239,15 +251,18 @@ const MediaMetadataContainer = Relay.createContainer(withPusher(MediaTasksCompon
         archived
         permissions
         pusher_channel
+        ${MediaLanguageChip.getFragment('projectMedia')}
         item_metadata: tasks(fieldset: "metadata", first: 10000) {
           edges {
             node {
               id,
               dbid,
+              show_in_browser_extension,
               ${Task.getFragment('task')},
             }
           }
         }
+        ${MediaTags.getFragment('projectMedia')}
       }
     `,
   },
@@ -288,7 +303,7 @@ const MediaTasks = (props) => {
     return (
       <Relay.RootContainer
         Component={MediaMetadataContainer}
-        renderFetched={data => <MediaMetadataContainer cachedMedia={media} {...data} fieldset="metadata" />}
+        renderFetched={data => <MediaMetadataContainer cachedMedia={media} {...data} onTimelineCommentOpen={props.onTimelineCommentOpen} fieldset="metadata" />}
         route={route}
         renderLoading={() => <MediasLoading count={1} />}
       />

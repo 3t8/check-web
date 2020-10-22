@@ -44,6 +44,7 @@ const ReportDesignerContainer = Relay.createContainer(ReportDesignerComponent, {
           id
           dbid
           data
+          sent_count
         }
         team {
           name
@@ -76,6 +77,7 @@ const ReportDesigner = (props) => {
       Component={ReportDesignerContainer}
       route={route}
       renderFetched={data => <ReportDesignerContainer {...props} {...data} />}
+      forceFetch
     />
   );
 };
