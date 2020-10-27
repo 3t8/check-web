@@ -34,9 +34,10 @@ import UserAvatars from '../UserAvatars';
 import Sentence from '../Sentence';
 import ConfirmProceedDialog from '../layout/ConfirmProceedDialog';
 import ProfileLink from '../layout/ProfileLink';
+import CheckError from '../../CheckError';
 import AttributionDialog from '../user/AttributionDialog';
 import CheckContext from '../../CheckContext';
-import { getErrorMessage } from '../../helpers';
+import { getErrorMessage, getErrorObjects } from '../../helpers';
 import UpdateTaskMutation from '../../relay/mutations/UpdateTaskMutation';
 import UpdateDynamicMutation from '../../relay/mutations/UpdateDynamicMutation';
 import DeleteAnnotationMutation from '../../relay/mutations/DeleteAnnotationMutation';
@@ -123,7 +124,16 @@ class Task extends Component {
   }
 
   fail = (transaction) => {
-    const message = getErrorMessage(transaction, <GenericUnknownErrorMessage />);
+    let message = '';
+    const error = getErrorObjects(transaction);
+    if (Array.isArray(error) && error.length > 0) {
+      if (error[0].code === CheckError.codes.ID_NOT_FOUND) {
+        message = 'TODO: Format a custom message for moved/non-exists tasks';
+      }
+    }
+    if (!message) {
+      message = getErrorMessage(transaction, <GenericUnknownErrorMessage />);
+    }
     this.setState({ message, isSaving: false });
   };
 
